@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="tool">
+  <meta name="design-style" content="nocturne">
+  <title>너에게 전하지 못했던 말들</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="[suspicious link removed]" rel="stylesheet">
+  <script src="[suspicious link removed]"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+
+      /* Nocturne base surfaces */
+      --background: #080e1c;
+      --surface-container-low: #0c1426;
+      --surface-container: #111b2e;
+      --surface-container-high: #17243c;
+      --surface-glass: rgba(13, 21, 38, 0.72);
+      --surface-glass-strong: rgba(15, 24, 44, 0.88);
+      --backdrop-scrim: rgba(4, 7, 16, 0.62);
+
+      /* Text */
+      --on-surface: #f2ece1;
+      --on-surface-variant: #9ba8bf;
+      --text-subtle: rgba(242, 236, 225, 0.62);
+
+      /* Borders */
+      --outline: #384d73;
+      --outline-variant: #21304d;
+      --outline-glass: rgba(242, 236, 225, 0.16);
+      --outline-glass-strong: rgba(223, 170, 91, 0.42);
+
+      /* Accents */
+      --primary: #dfaa5b;
+      --on-primary: #0a101d;
+      --primary-container: #2b261c;
+      --on-primary-container: #f5dcb0;
+      --secondary: #687a99;
+      --tertiary: #7cc4e8;
+      --error: #f27474;
+      --on-error: #1a0606;
+      --positive: #52d19c;
+      --warning: #e8b86d;
+      --focus: #dfaa5b;
+
+      /* Analog torn parchment tokens */
+      --paper-bg: #efe4cf;
+      --paper-bg-edge: #dfd0b4;
+      --paper-ink: #271e17;
+      --paper-ink-muted: #665544;
+      --paper-crease: rgba(94, 72, 48, 0.16);
+      --paper-fiber: rgba(120, 92, 58, 0.06);
+      --paper-shadow: 0 22px 48px rgba(4, 6, 14, 0.65);
+
+      /* Fonts */
+      --font-headline: 'Noto Serif KR', 'EB Garamond', serif;
+      --font-body: 'Noto Sans KR', sans-serif;
+      --font-label: 'Noto Sans KR', 'JetBrains Mono', monospace;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Type Scale */
+      --display-size: clamp(1.5rem, 1.15rem + 1.5vw, 2.35rem);
+      --headline-size: clamp(1.25rem, 1.05rem + 0.6vw, 1.55rem);
+      --subhead-size: clamp(1rem, 0.94rem + 0.25vw, 1.15rem);
+      --body-size: clamp(0.9375rem, 0.9rem + 0.15vw, 1rem);
+      --label-size: 0.8125rem;
+
+      /* Spacing Scale */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+
+      /* Radii & Effects */
+      --rounded: 0.375rem;
+      --rounded-lg: 0.75rem;
+      --rounded-pill: 9999px;
+      --hairline: 1px solid var(--outline-variant);
+      --hairline-strong: 1px solid var(--outline);
+      --glass-border: 1px solid var(--outline-glass);
+      --panel-highlight: inset 0 1px 0 rgba(242, 236, 225, 0.08);
+      --starlight-glow: 0 0 24px rgba(223, 170, 91, 0.16);
+      --sky-tint: color-mix(in srgb, var(--tertiary) 14%, transparent);
+      --brass-tint: color-mix(in srgb, var(--primary) 16%, transparent);
+      --error-tint: color-mix(in srgb, var(--error) 14%, transparent);
+      --positive-tint: color-mix(in srgb, var(--positive) 14%, transparent);
+      --text-glow-shadow: 0 2px 18px rgba(4, 8, 20, 0.72);
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 140ms;
+      --dur-short: 240ms;
+      --dur-long: 420ms;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      overflow-x: clip;
+      background-color: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.6;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    header { position: static !important; }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Fullscreen Interactive Stage */
+    .stage-shell {
+      position: relative;
+      width: 100vw;
+      height: 100dvh;
+      min-height: 540px;
+      overflow: hidden;
+      background-color: var(--background);
+    }
+
+    #sky-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    /* Top-center poetic title */
+    .title-overlay {
+      position: absolute;
+      top: clamp(1rem, 3.2vh, 2.25rem);
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+      z-index: 10;
+      width: min(90vw, 38rem);
+      padding: 0 var(--space-md);
+    }
+
+    .hero-title {
+      margin: 0;
+      font-family: var(--font-headline);
+      font-weight: 500;
+      font-size: var(--display-size);
+      line-height: 1.25;
+      color: var(--on-surface);
+      text-shadow: var(--text-glow-shadow);
+      letter-spacing: 0.04em;
+    }
+
+    /* Bottom-center gentle prompt */
+    .bottom-guide {
+      position: absolute;
+      bottom: clamp(1rem, 2.8vh, 2rem);
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 10;
+      text-align: center;
+      width: min(92vw, 32rem);
+    }
+
+    .guide-text {
+      margin: 0;
+      font-family: var(--font-headline);
+      font-size: clamp(0.875rem, 0.82rem + 0.25vw, 1rem);
+      color: var(--text-subtle);
+      text-shadow: var(--text-glow-shadow);
+      animation: gentlePulse 4.8s var(--ease-in-out) infinite;
+    }
+
+    @keyframes gentlePulse {
+      0%, 100% { opacity: 0.48; }
+      50% { opacity: 0.86; }
+    }
+
+    /* Transparent Starlight Controls (Top-right) */
+    .starlight-controls {
+      position: absolute;
+      top: clamp(0.875rem, 2.6vh, 1.75rem);
+      right: clamp(0.875rem, 2.4vw, 1.75rem);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      z-index: 20;
+    }
+
+    .starlight-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+      min-width: 44px;
+      min-height: 44px;
+      padding: var(--space-xs) var(--space-md);
+      border-radius: var(--rounded-pill);
+      border: var(--glass-border);
+      background: var(--surface-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--on-surface);
+      font-size: var(--label-size);
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: var(--panel-highlight), var(--starlight-glow);
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  border-color var(--dur-micro) var(--ease-out),
+                  transform var(--dur-micro) var(--ease-out);
+    }
+
+    .starlight-btn:hover {
+      background: var(--surface-container-high);
+      border-color: var(--outline-glass-strong);
+    }
+
+    .starlight-btn:active {
+      transform: translateY(1px);
+    }
+
+    .starlight-btn.is-active {
+      background: var(--brass-tint);
+      border-color: var(--primary);
+      color: var(--on-primary-container);
+    }
+
+    .starlight-btn svg {
+      width: 17px;
+      height: 17px;
+      flex-shrink: 0;
+    }
+
+    .count-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.35rem;
+      height: 1.35rem;
+      padding: 0 var(--space-xs);
+      border-radius: var(--rounded-pill);
+      background: var(--brass-tint);
+      color: var(--primary);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    /* Toast Notification */
+    .toast-banner {
+      position: absolute;
+      bottom: clamp(3.5rem, 8vh, 5rem);
+      left: 50%;
+      transform: translate(-50%, 10px);
+      z-index: 35;
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--rounded-pill);
+      background: var(--surface-glass-strong);
+      border: var(--glass-border);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: var(--on-surface);
+      font-size: var(--label-size);
+      box-shadow: var(--panel-highlight), var(--starlight-glow);
+      opacity: 0;
+      pointer-events: none;
+      text-align: center;
+      max-width: min(90vw, 30rem);
+      transition: opacity var(--dur-short) var(--ease-out),
+                  transform var(--dur-short) var(--ease-out);
+    }
+
+    .toast-banner.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* Sound Control Popover */
+    .sound-popover {
+      position: absolute;
+      top: calc(clamp(0.875rem, 2.6vh, 1.75rem) + 52px);
+      right: clamp(0.875rem, 2.4vw, 1.75rem);
+      width: min(92vw, 21rem);
+      z-index: 30;
+      background: var(--surface-glass-strong);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: var(--glass-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-lg);
+      box-shadow: var(--panel-highlight), var(--paper-shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+      transition: opacity var(--dur-short) var(--ease-out),
+                  transform var(--dur-short) var(--ease-out);
+    }
+
+    .sound-popover.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .popover-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      padding-bottom: var(--space-sm);
+      margin-bottom: var(--space-md);
+      border-bottom: var(--hairline);
+    }
+
+    .popover-title {
+      margin: 0;
+      font-family: var(--font-headline);
+      font-size: var(--subhead-size);
+      font-weight: 500;
+      color: var(--on-surface);
+    }
+
+    .icon-close-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+      margin: calc(var(--space-xs) * -1);
+      background: transparent;
+      border: none;
+      border-radius: var(--rounded-pill);
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  color var(--dur-micro) var(--ease-out);
+    }
+
+    .icon-close-btn:hover {
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .slider-field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .slider-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      font-size: var(--label-size);
+      color: var(--on-surface);
+    }
+
+    .slider-sub {
+      font-size: 0.75rem;
+      color: var(--on-surface-variant);
+    }
+
+    .slider-val {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 28px;
+      accent-color: var(--primary);
+      cursor: pointer;
+      background: transparent;
+      margin: 0;
+    }
+
+    .sound-footer {
+      margin-top: var(--space-md);
+      padding-top: var(--space-sm);
+      border-top: var(--hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+
+    .pause-note {
+      margin: 0;
+      font-size: 0.75rem;
+      color: var(--tertiary);
+    }
+
+    /* Modals Backdrop */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-md);
+      background: var(--backdrop-scrim);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--dur-short) var(--ease-out);
+    }
+
+    .modal-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Nocturne Write Modal */
+    .nocturne-modal {
+      width: min(100%, 31rem);
+      max-height: 90dvh;
+      overflow-y: auto;
+      background: var(--surface-container);
+      border: var(--glass-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--panel-highlight), var(--paper-shadow);
+      transform: translateY(10px) scale(0.985);
+      transition: transform var(--dur-short) var(--ease-out);
+    }
+
+    .modal-backdrop.is-open .nocturne-modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .modal-kicker {
+      margin: 0 0 var(--space-xs);
+      font-size: 0.75rem;
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .modal-heading {
+      margin: 0;
+      font-family: var(--font-headline);
+      font-size: var(--headline-size);
+      font-weight: 500;
+      line-height: 1.3;
+      color: var(--on-surface);
+    }
+
+    .form-stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .field-block {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .field-label {
+      font-size: var(--label-size);
+      font-weight: 500;
+      color: var(--on-surface-variant);
+    }
+
+    .text-input,
+    .text-area {
+      width: 100%;
+      background: var(--background);
+      border: var(--hairline-strong);
+      border-radius: var(--rounded);
+      padding: 0.65rem 0.85rem;
+      color: var(--on-surface);
+      line-height: 1.55;
+      transition: border-color var(--dur-micro) var(--ease-out),
+                  box-shadow var(--dur-micro) var(--ease-out);
+      user-select: text;
+    }
+
+    .text-area {
+      min-height: 7.5rem;
+      resize: vertical;
+    }
+
+    .text-input:focus,
+    .text-area:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--brass-tint);
+    }
+
+    .form-feedback {
+      min-height: 1.25rem;
+      margin: 0;
+      font-size: var(--label-size);
+      color: var(--error);
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xs);
+      min-height: 44px;
+      padding: 0.55rem 1.25rem;
+      border-radius: var(--rounded);
+      font-size: var(--label-size);
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  border-color var(--dur-micro) var(--ease-out),
+                  transform var(--dur-micro) var(--ease-out);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--on-primary-container);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border-color: var(--outline);
+      color: var(--on-surface);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-container-high);
+      border-color: var(--primary);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--on-surface-variant);
+    }
+
+    .btn-ghost:hover {
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+    }
+
+    /* Read Fallen Letter Modal (Normal + 30% Analog Torn Paper) */
+    .read-card {
+      width: min(100%, 30rem);
+      max-height: 90dvh;
+      overflow-y: auto;
+      position: relative;
+      transform: translateY(10px) scale(0.985);
+      transition: transform var(--dur-short) var(--ease-out);
+    }
+
+    .modal-backdrop.is-open .read-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .read-card.is-night {
+      background: var(--surface-container);
+      border: var(--glass-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--panel-highlight), var(--paper-shadow);
+    }
+
+    /* Analog Torn Paper Mode (30% chance) */
+    .read-card.is-torn {
+      background-color: var(--paper-bg);
+      background-image:
+        linear-gradient(178deg, transparent 47%, var(--paper-crease) 49.5%, transparent 51%),
+        radial-gradient(circle at 18% 22%, var(--paper-fiber), transparent 46%),
+        radial-gradient(circle at 82% 76%, var(--paper-fiber), transparent 52%),
+        linear-gradient(135deg, var(--paper-bg) 0%, var(--paper-bg-edge) 100%);
+      color: var(--paper-ink);
+      padding: calc(var(--space-xl) + 0.5rem) var(--space-xl);
+      box-shadow: var(--paper-shadow);
+      clip-path: polygon(
+        0% 2%, 4% 0%, 9% 2.5%, 14% 0.5%, 19% 2%, 25% 0%, 31% 1.8%, 37% 0.2%,
+        43% 2.4%, 49% 0.4%, 56% 1.8%, 62% 0%, 68% 2.2%, 75% 0.5%, 81% 1.9%,
+        88% 0.2%, 94% 2.1%, 100% 0.6%,
+        98.5% 9%, 100% 18%, 98.2% 28%, 99.6% 39%, 98% 51%, 99.7% 63%, 98.4% 74%,
+        100% 86%, 98.8% 97%,
+        95% 99.5%, 89% 97.6%, 82% 99.8%, 76% 97.8%, 69% 99.4%, 63% 97.5%,
+        56% 99.6%, 50% 97.9%, 43% 99.5%, 36% 97.6%, 29% 99.8%, 22% 97.7%,
+        15% 99.5%, 8% 97.8%, 2% 99.6%,
+        0.8% 90%, 0% 79%, 1.6% 68%, 0.2% 56%, 1.8% 45%, 0.4% 33%, 1.5% 21%, 0% 11%
+      );
+    }
+
+    .read-card.is-torn .modal-kicker {
+      color: var(--paper-ink-muted);
+    }
+
+    .read-card.is-torn .read-recipient,
+    .read-card.is-torn .read-body,
+    .read-card.is-torn .read-sender {
+      color: var(--paper-ink);
+    }
+
+    .read-card.is-torn .read-meta {
+      color: var(--paper-ink-muted);
+      border-top-color: var(--paper-crease);
+    }
+
+    .read-card.is-torn .btn-primary {
+      background: var(--paper-ink);
+      color: var(--paper-bg);
+    }
+
+    .read-card.is-torn .btn-secondary {
+      border-color: var(--paper-ink-muted);
+      color: var(--paper-ink);
+    }
+
+    .read-card.is-torn .btn-secondary:hover {
+      background: var(--paper-crease);
+    }
+
+    .read-card.is-torn .icon-close-btn {
+      color: var(--paper-ink-muted);
+    }
+
+    .read-recipient {
+      margin: 0 0 var(--space-md);
+      font-family: var(--font-headline);
+      font-size: var(--subhead-size);
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .read-body {
+      margin: 0 0 var(--space-lg);
+      font-family: var(--font-headline);
+      font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      line-height: 1.85;
+      white-space: pre-wrap;
+      color: var(--on-surface);
+      user-select: text;
+    }
+
+    .read-sender {
+      margin: 0;
+      text-align: right;
+      font-family: var(--font-headline);
+      font-size: var(--body-size);
+      color: var(--on-surface-variant);
+    }
+
+    .read-meta {
+      margin-top: var(--space-md);
+      padding-top: var(--space-sm);
+      border-top: var(--hairline);
+      font-size: 0.78rem;
+      color: var(--on-surface-variant);
+    }
+
+    /* Constellation Archive Panel */
+    .archive-modal {
+      width: min(100%, 44rem);
+      max-height: 88dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface-container);
+      border: var(--glass-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--panel-highlight), var(--paper-shadow);
+      transform: translateY(10px);
+      transition: transform var(--dur-short) var(--ease-out);
+    }
+
+    .modal-backdrop.is-open .archive-modal {
+      transform: translateY(0);
+    }
+
+    .archive-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .stat-tile {
+      background: var(--background);
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      padding: var(--space-sm) var(--space-md);
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--on-surface-variant);
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 2px;
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .archive-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
+    }
+
+    .filter-chip {
+      min-height: 36px;
+      padding: var(--space-xs) var(--space-md);
+      border-radius: var(--rounded-pill);
+      border: var(--hairline-strong);
+      background: transparent;
+      color: var(--on-surface-variant);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  color var(--dur-micro) var(--ease-out),
+                  border-color var(--dur-micro) var(--ease-out);
+    }
+
+    .filter-chip:hover {
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+    }
+
+    .filter-chip.is-active {
+      background: var(--brass-tint);
+      border-color: var(--primary);
+      color: var(--on-primary-container);
+    }
+
+    .archive-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      padding-right: var(--space-xs);
+      min-height: 12rem;
+    }
+
+    .archive-item {
+      width: 100%;
+      text-align: left;
+      background: var(--surface-container-low);
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      padding: var(--space-md);
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  border-color var(--dur-micro) var(--ease-out);
+    }
+
+    .archive-item:hover {
+      background: var(--surface-container-high);
+      border-color: var(--outline);
+    }
+
+    .archive-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xs);
+    }
+
+    .archive-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-sm);
+      border-radius: var(--rounded);
+      font-size: 0.72rem;
+      font-weight: 500;
+    }
+
+    .archive-tag.tag-kept {
+      background: var(--brass-tint);
+      color: var(--primary);
+    }
+
+    .archive-tag.tag-sent {
+      background: var(--sky-tint);
+      color: var(--tertiary);
+    }
+
+    .archive-tag.tag-nature {
+      background: var(--positive-tint);
+      color: var(--positive);
+    }
+
+    .archive-date {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--on-surface-variant);
+    }
+
+    .archive-preview {
+      margin: 0;
+      font-family: var(--font-headline);
+      font-size: 0.95rem;
+      color: var(--on-surface);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .archive-from {
+      margin: var(--space-xs) 0 0;
+      font-size: 0.78rem;
+      color: var(--on-surface-variant);
+    }
+
+    .empty-archive {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--space-2xl) var(--space-md);
+      color: var(--on-surface-variant);
+      gap: var(--space-sm);
+    }
+
+    .archive-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: var(--hairline);
+    }
+
+    @media (max-width: 640px) {
+      .title-overlay {
+        top: 4.5rem;
+      }
+      .starlight-controls {
+        top: 0.75rem;
+        right: 0.75rem;
+      }
+      .starlight-btn .btn-label {
+        display: none;
+      }
+      .starlight-btn {
+        padding: var(--space-xs) var(--space-sm);
+      }
+      .archive-stats {
+        grid-template-columns: 1fr;
+      }
+      .nocturne-modal,
+      .read-card,
+      .archive-modal {
+        padding: var(--space-lg);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage-shell">
+    <canvas id="sky-canvas" aria-label="밤하늘과 별의 궤적, 언덕과 호수 인터랙티브 캔버스"></canvas>
+
+    <div class="title-overlay">
+      <h1 class="hero-title">너에게 전하지 못했던 말들</h1>
+    </div>
+
+    <!-- 투명 별빛 조작부 -->
+    <nav class="starlight-controls" aria-label="별빛 조작부">
+      <button type="button" class="starlight-btn" id="btn-sound-toggle" onclick="toggleSoundPanel()" aria-expanded="false" aria-controls="sound-panel">
+        <i data-lucide="volume-2" aria-hidden="true"></i>
+        <span class="btn-label">별빛 소리</span>
+      </button>
+      <button type="button" class="starlight-btn" id="btn-archive-toggle" onclick="openArchivePanel()">
+        <i data-lucide="sparkles" aria-hidden="true"></i>
+        <span class="btn-label">별자리 보관함</span>
+        <span class="count-pill" id="archive-count-badge">0</span>
+      </button>
+    </nav>
+
+    <!-- 소리 조절 창 -->
+    <section class="sound-popover" id="sound-panel" role="dialog" aria-label="별빛 소리 조절" aria-hidden="true">
+      <div class="popover-header">
+        <h2 class="popover-title">밤하늘 소리 조절</h2>
+        <button type="button" class="icon-close-btn" onclick="closeSoundPanel()" aria-label="소리 조절 창 닫기">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="slider-group">
+        <div class="slider-field">
+          <div class="slider-label-row">
+            <label for="slider-bgm">배경음 <span class="slider-sub">(피아노 · 밤의 자연음)</span></label>
+            <span class="slider-val" id="val-bgm">70%</span>
+          </div>
+          <input type="range" id="slider-bgm" min="0" max="100" value="70" oninput="onSoundSliderChange('bgm', this.value)">
+        </div>
+        <div class="slider-field">
+          <div class="slider-label-row">
+            <label for="slider-starlight">별빛음 <span class="slider-sub">(바이올린 · 실로폰 · 별빛)</span></label>
+            <span class="slider-val" id="val-starlight">80%</span>
+          </div>
+          <input type="range" id="slider-starlight" min="0" max="100" value="80" oninput="onSoundSliderChange('starlight', this.value)">
+        </div>
+        <div class="slider-field">
+          <div class="slider-label-row">
+            <label for="slider-water">물소리 <span class="slider-sub">(호수 발자국 · 잔물결)</span></label>
+            <span class="slider-val" id="val-water">75%</span>
+          </div>
+          <input type="range" id="slider-water" min="0" max="100" value="75" oninput="onSoundSliderChange('water', this.value)">
+        </div>
+      </div>
+      <div class="sound-footer">
+        <p class="pause-note">창이 열린 동안 발걸음이 잠시 멈춥니다</p>
+        <button type="button" class="btn btn-secondary" id="btn-mute-all" onclick="toggleMuteAll()">전체 음소거</button>
+      </div>
+    </section>
+
+    <div class="bottom-guide">
+      <p class="guide-text">하늘을 클릭하면 궤도가 보이게 됩니다</p>
+    </div>
+
+    <div class="toast-banner" id="toast-banner" role="status" aria-live="polite"></div>
+  </main>
+
+  <!-- 편지 작성 모달 -->
+  <div class="modal-backdrop" id="write-modal-backdrop" aria-hidden="true">
+    <section class="nocturne-modal" role="dialog" aria-modal="true" aria-labelledby="write-modal-title">
+      <div class="modal-head">
+        <div>
+          <p class="modal-kicker">별의 궤적 위에 남기는 기록</p>
+          <h2 class="modal-heading" id="write-modal-title">전하지 못했던 말 적기</h2>
+        </div>
+        <button type="button" class="icon-close-btn" onclick="closeWriteModal()" aria-label="편지 작성 닫기">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <form class="form-stack" onsubmit="return false;">
+        <div class="field-block">
+          <label class="field-label" for="letter-to">받는 이</label>
+          <input class="text-input" id="letter-to" type="text" maxlength="40" autocomplete="off">
+        </div>
+        <div class="field-block">
+          <label class="field-label" for="letter-body">편지 내용</label>
+          <textarea class="text-area" id="letter-body" maxlength="500"></textarea>
+        </div>
+        <div class="field-block">
+          <label class="field-label" for="letter-from">보내는 이 (선택사항)</label>
+          <input class="text-input" id="letter-from" type="text" maxlength="30" autocomplete="off">
+        </div>
+        <p class="form-feedback" id="write-form-error" role="alert"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeWriteModal()">닫기</button>
+          <button type="button" class="btn btn-secondary" onclick="submitStarLetter('keep')">간직하기</button>
+          <button type="button" class="btn btn-primary" onclick="submitStarLetter('send')">보내기</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- 떨어진 별 / 보관함 편지 읽기 모달 -->
+  <div class="modal-backdrop" id="read-modal-backdrop" aria-hidden="true">
+    <article class="read-card is-night" id="read-card" role="dialog" aria-modal="true" aria-labelledby="read-modal-kicker">
+      <div class="modal-head">
+        <div>
+          <p class="modal-kicker" id="read-modal-kicker">떨어진 별에서 도착한 편지</p>
+        </div>
+        <button type="button" class="icon-close-btn" onclick="closeReadModal()" aria-label="편지 읽기 닫기">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <p class="read-recipient" id="read-recipient"></p>
+      <p class="read-body" id="read-body"></p>
+      <p class="read-sender" id="read-sender"></p>
+      <p class="read-meta" id="read-meta"></p>
+      <div class="modal-actions" id="read-modal-actions">
+        <button type="button" class="btn btn-secondary" id="btn-release-letter" onclick="releaseFallenLetter()">놓아주기</button>
+        <button type="button" class="btn btn-primary" id="btn-keep-letter" onclick="keepFallenLetter()">보관하기</button>
+      </div>
+    </article>
+  </div>
+
+  <!-- 별자리 보관함 모달 -->
+  <div class="modal-backdrop" id="archive-modal-backdrop" aria-hidden="true">
+    <section class="archive-modal" role="dialog" aria-modal="true" aria-labelledby="archive-modal-title">
+      <div class="modal-head">
+        <div>
+          <p class="modal-kicker">나의 밤하늘 기록</p>
+          <h2 class="modal-heading" id="archive-modal-title">별자리 보관함</h2>
+        </div>
+        <button type="button" class="icon-close-btn" onclick="closeArchivePanel()" aria-label="별자리 보관함 닫기">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="archive-stats">
+        <div class="stat-tile">
+          <span class="stat-label">간직한 편지</span>
+          <span class="stat-value" id="stat-kept-count">0</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">공용 밤하늘로 보낸 별</span>
+          <span class="stat-value" id="stat-sent-count">0</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">호수 위 종이배</span>
+          <span class="stat-value" id="stat-boat-count">0</span>
+        </div>
+      </div>
+
+      <div class="archive-filters" role="tablist" aria-label="보관함 분류">
+        <button type="button" class="filter-chip is-active" id="filter-all" onclick="setArchiveFilter('all')">전체</button>
+        <button type="button" class="filter-chip" id="filter-kept" onclick="setArchiveFilter('kept')">간직한 편지</button>
+        <button type="button" class="filter-chip" id="filter-sent" onclick="setArchiveFilter('sent')">보낸 별</button>
+        <button type="button" class="filter-chip" id="filter-nature" onclick="setArchiveFilter('nature')">자연의 응원</button>
+      </div>
+
+      <div class="archive-list" id="archive-list"></div>
+
+      <div class="archive-footer">
+        <button type="button" class="btn btn-ghost" id="btn-reset-archive" onclick="handleResetArchive(this)">보관함 비우기</button>
+        <div class="modal-actions" style="margin-top: 0;">
+          <button type="button" class="btn btn-secondary" onclick="exportArchiveText()">기록 내려받기</button>
+          <button type="button" class="btn btn-primary" onclick="closeArchivePanel()">밤하늘로 돌아가기</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <api-shim></api-shim>
+  <script>
+    (function () {
+      'use strict';
+
+      /* Curated Nature Encouragement Messages */
+      const NATURE_MESSAGES = [
+        {
+          to: `밤하늘을 올려다보는 너에게`,
+          body: `오늘도 말없이 버텨낸 네 어깨 위로 바람이 조용히 내려앉았어.\n급하게 대답하지 않아도 괜찮아. 밤은 원래 서두르지 않고 깊어지는 법이니까.`,
+          from: `호수 위를 지나가는 밤바람`
+        },
+        {
+          to: `잠들지 못한 마음에게`,
+          body: `물결이 흔들린다고 해서 호수의 깊이가 얕아지는 건 아니야.\n네가 오늘 조금 흔들렸더라도, 네 안의 고요는 여전히 그 자리에 있어.`,
+          from: `잔물결이 닿은 기슭`
+        },
+        {
+          to: `걸음을 멈춘 너에게`,
+          body: `아무 말도 남기지 못한 날도 별들은 조용히 궤도를 돌며 제 빛을 내.\n오늘 네가 삼킨 말들도 언젠가 가장 따뜻한 빛으로 돌아올 거야.`,
+          from: `먼 언덕의 달빛`
+        },
+        {
+          to: `오래된 안부를 묻고 싶은 너에게`,
+          body: `풀벌레 소리가 잦아드는 새벽녘처럼, 무거웠던 마음도 시간 속에서 조금씩 가벼워질 거야.\n지금 이 밤만큼은 아무것도 증명하지 않고 쉬어도 좋아.`,
+          from: `풀숲의 작은 풀벌레`
+        },
+        {
+          to: `혼자라고 느꼈던 너에게`,
+          body: `하늘의 별들은 멀리 떨어져 보여도 같은 밤을 함께 비추고 있대.\n네가 내디딘 발걸음 아래에도 언제나 이 호수가 조용히 비추고 있을게.`,
+          from: `별빛을 품은 호수`
+        },
+        {
+          to: `말을 고르다 지친 너에게`,
+          body: `완벽한 문장이 아니어도 괜찮아. 다듬어지지 않은 진심이 더 오래 빛날 때가 많거든.\n오늘 밤 네 마음의 온도를 그대로 믿어주렴.`,
+          from: `안개 낀 언덕 능선`
+        },
+        {
+          to: `지나간 계절을 그리워하는 너에게`,
+          body: `떨어진 별빛이 사라지지 않고 땅에 닿아 다시 누군가의 눈동자에 머무르듯,\n네가 건넸던 다정함도 어디선가 조용히 살아 숨 쉬고 있을 거야.`,
+          from: `밤공기 속 은하수`
+        },
+        {
+          to: `내일을 조금 두려워하는 너에게`,
+          body: `짙은 파랑에서 보라로, 또 은은한 핑크빛으로 밤하늘이 천천히 숨을 고르듯\n너의 시간도 가장 알맞은 빛깔로 천천히 물들어 갈 거야.`,
+          from: `새벽을 기다리는 하늘`
+        }
+      ];
+
+      /* Persistent Application State */
+      const appState = {
+        keptLetters: [],
+        sentLetters: [],
+        paperBoats: [],
+        audioSettings: {
+          bgm: 0.7,
+          starlight: 0.8,
+          water: 0.75,
+          muted: false
+        }
+      };
+
+      const uiState = {
+        soundOpen: false,
+        archiveOpen: false,
+        writeOpen: false,
+        readOpen: false,
+        archiveFilter: 'all',
+        activeTrajectoryStar: null,
+        activeFallenStar: null,
+        readingArchiveItem: null,
+        pendingFallenStar: null
+      };
+
+      function isCharacterPaused() {
+        return uiState.soundOpen || uiState.archiveOpen || uiState.writeOpen || uiState.readOpen;
+      }
+
+      async function saveAppState() {
+        const payload = {
+          keptLetters: appState.keptLetters.slice(0, 120),
+          sentLetters: appState.sentLetters.slice(0, 120),
+          paperBoats: appState.paperBoats.slice(0, 40),
+          audioSettings: appState.audioSettings
+        };
+        try {
+          if (window.notebookAppApi && typeof window.notebookAppApi.setAppState === 'function') {
+            await window.notebookAppApi.setAppState(payload);
+          }
+        } catch (err) {}
+      }
+
+      async function loadAppState() {
+        try {
+          if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === 'function') {
+            const loaded = await window.notebookAppApi.getAppState();
+            if (loaded && typeof loaded === 'object') {
+              if (Array.isArray(loaded.keptLetters)) appState.keptLetters = loaded.keptLetters;
+              if (Array.isArray(loaded.sentLetters)) appState.sentLetters = loaded.sentLetters;
+              if (Array.isArray(loaded.paperBoats)) appState.paperBoats = loaded.paperBoats;
+              if (loaded.audioSettings && typeof loaded.audioSettings === 'object') {
+                appState.audioSettings = Object.assign({}, appState.audioSettings, loaded.audioSettings);
+              }
+            }
+          }
+        } catch (err) {}
+      }
+
+      /* Web Audio Sound Engine */
+      const SoundEngine = {
+        ctx: null,
+        masterGain: null,
+        bgmGain: null,
+        starGain: null,
+        waterGain: null,
+        reverbNode: null,
+        initialized: false,
+
+        ensureInit: function () {
+          if (this.initialized) {
+            if (this.ctx && this.ctx.state === 'suspended') {
+              this.ctx.resume().catch(function () {});
+            }
+            return;
+          }
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+
+          const ctx = new AudioCtx();
+          this.ctx = ctx;
+
+          this.masterGain = ctx.createGain();
+          this.bgmGain = ctx.createGain();
+          this.starGain = ctx.createGain();
+          this.waterGain = ctx.createGain();
+
+          this.reverbNode = this.createReverb(ctx, 2.8, 2.4);
+
+          this.bgmGain.connect(this.masterGain);
+          this.starGain.connect(this.masterGain);
+          this.waterGain.connect(this.masterGain);
+          this.reverbNode.connect(this.masterGain);
+          this.masterGain.connect(ctx.destination);
+
+          this.applyVolumes();
+          this.startNightAmbience();
+          this.startPianoBgm();
+          this.initialized = true;
+        },
+
+        createReverb: function (ctx, duration, decay) {
+          const convolver = ctx.createConvolver();
+          const rate = ctx.sampleRate;
+          const length = Math.floor(rate * duration);
+          const impulse = ctx.createBuffer(2, length, rate);
+          for (let ch = 0; ch < 2; ch++) {
+            const data = impulse.getChannelData(ch);
+            for (let i = 0; i < length; i++) {
+              data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+            }
+          }
+          convolver.buffer = impulse;
+          return convolver;
+        },
+
+        applyVolumes: function () {
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          const muted = appState.audioSettings.muted ? 0 : 1;
+          this.bgmGain.gain.setTargetAtTime(appState.audioSettings.bgm * muted, now, 0.08);
+          this.starGain.gain.setTargetAtTime(appState.audioSettings.starlight * muted, now, 0.08);
+          this.waterGain.gain.setTargetAtTime(appState.audioSettings.water * muted, now, 0.08);
+        },
+
+        startNightAmbience: function () {
+          const ctx = this.ctx;
+          if (!ctx) return;
+
+          const bufferSize = ctx.sampleRate * 4;
+          const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const out = noiseBuffer.getChannelData(0);
+          let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99886 * b0 + white * 0.0555179;
+            b1 = 0.99332 * b1 + white * 0.0750759;
+            b2 = 0.96900 * b2 + white * 0.1538520;
+            b3 = 0.86650 * b3 + white * 0.3104856;
+            b4 = 0.55000 * b4 + white * 0.5329522;
+            b5 = -0.7616 * b5 - white * 0.0168980;
+            out[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
+            b6 = white * 0.115926;
+          }
+
+          const windSrc = ctx.createBufferSource();
+          windSrc.buffer = noiseBuffer;
+          windSrc.loop = true;
+          const windFilter = ctx.createBiquadFilter();
+          windFilter.type = 'lowpass';
+          windFilter.frequency.value = 340;
+          const windGain = ctx.createGain();
+          windGain.gain.value = 0.18;
+          const windLfo = ctx.createOscillator();
+          windLfo.frequency.value = 0.09;
+          const windLfoGain = ctx.createGain();
+          windLfoGain.gain.value = 110;
+          windLfo.connect(windLfoGain);
+          windLfoGain.connect(windFilter.frequency);
+          windSrc.connect(windFilter);
+          windFilter.connect(windGain);
+          windGain.connect(this.bgmGain);
+          windSrc.start();
+          windLfo.start();
+        },
+
+        startPianoBgm: function () {
+          const self = this;
+          const scale = [293.66, 329.63, 369.99, 440.00, 493.88, 554.37, 587.33, 659.25];
+          const bass = [146.83, 123.47, 110.00, 98.00];
+          let step = 0;
+          function playNext() {
+            if (!self.ctx) return;
+            if (!appState.audioSettings.muted && appState.audioSettings.bgm > 0.02) {
+              const freq = scale[Math.floor(Math.random() * scale.length)];
+              self.playFeltPianoNote(freq, 0.085, 3.6, self.bgmGain);
+              if (step % 3 === 0) {
+                const bassFreq = bass[(step / 3) % bass.length];
+                self.playFeltPianoNote(bassFreq, 0.065, 4.8, self.bgmGain);
+              }
+              step++;
+            }
+            window.setTimeout(playNext, 2200 + Math.random() * 2400);
+          }
+          window.setTimeout(playNext, 900);
+        },
+
+        playFeltPianoNote: function (freq, peak, duration, targetBus) {
+          const ctx = this.ctx;
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          osc1.type = 'triangle';
+          osc2.type = 'sine';
+          osc1.frequency.setValueAtTime(freq, now);
+          osc2.frequency.setValueAtTime(freq * 2, now);
+
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(1400, now);
+          filter.frequency.exponentialRampToValueAtTime(420, now + duration * 0.7);
+
+          const g1 = ctx.createGain();
+          g1.gain.setValueAtTime(0.0001, now);
+          g1.gain.exponentialRampToValueAtTime(peak, now + 0.03);
+          g1.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+          const g2 = ctx.createGain();
+          g2.gain.setValueAtTime(0.0001, now);
+          g2.gain.exponentialRampToValueAtTime(peak * 0.28, now + 0.02);
+          g2.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.45);
+
+          const wetGain = ctx.createGain();
+          wetGain.gain.value = 0.28;
+
+          osc1.connect(filter);
+          osc2.connect(g2);
+          g2.connect(filter);
+          filter.connect(g1);
+          g1.connect(targetBus);
+          g1.connect(wetGain);
+          wetGain.connect(this.reverbNode);
+
+          osc1.start(now);
+          osc2.start(now);
+          osc1.stop(now + duration + 0.05);
+          osc2.stop(now + duration + 0.05);
+        },
+
+        playViolinChord: function () {
+          this.ensureInit();
+          const ctx = this.ctx;
+          if (!ctx || appState.audioSettings.muted) return;
+          const voicings = [
+            [293.66, 440.00, 554.37, 659.25],
+            [246.94, 369.99, 440.00, 587.33],
+            [220.00, 329.63, 440.00, 554.37],
+            [196.00, 293.66, 369.99, 493.88]
+          ];
+          const chord = voicings[Math.floor(Math.random() * voicings.length)];
+          const now = ctx.currentTime;
+
+          chord.forEach(function (freq, idx) {
+            const oscA = ctx.createOscillator();
+            const oscB = ctx.createOscillator();
+            oscA.type = 'sawtooth';
+            oscB.type = 'triangle';
+            oscA.frequency.setValueAtTime(freq * 0.997, now);
+            oscB.frequency.setValueAtTime(freq * 1.003, now);
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(680, now);
+            filter.frequency.linearRampToValueAtTime(1650, now + 0.9);
+
+            const env = ctx.createGain();
+            env.gain.setValueAtTime(0.0001, now);
+            env.gain.linearRampToValueAtTime(0.042, now + 0.55 + idx * 0.08);
+            env.gain.exponentialRampToValueAtTime(0.0001, now + 3.4);
+
+            oscA.connect(filter);
+            oscB.connect(filter);
+            filter.connect(env);
+            env.connect(SoundEngine.starGain);
+
+            oscA.start(now);
+            oscB.start(now);
+            oscA.stop(now + 3.5);
+            oscB.stop(now + 3.5);
+          });
+        },
+
+        playStarClick: function () {
+          this.ensureInit();
+          const ctx = this.ctx;
+          if (!ctx || appState.audioSettings.muted) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1174.66, now);
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.0001, now);
+          g.gain.exponentialRampToValueAtTime(0.08, now + 0.015);
+          g.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
+          osc.connect(g);
+          g.connect(SoundEngine.starGain);
+          osc.start(now);
+          osc.stop(now + 1.2);
+        },
+
+        playPianoClick: function () {
+          this.ensureInit();
+          if (!this.ctx || appState.audioSettings.muted) return;
+          this.playFeltPianoNote(369.99, 0.14, 2.8, this.starGain);
+        },
+
+        playXylophoneRelease: function () {
+          this.ensureInit();
+          const ctx = this.ctx;
+          if (!ctx || appState.audioSettings.muted) return;
+          const notes = [587.33, 739.99, 880.00, 1174.66];
+          const now = ctx.currentTime;
+          notes.forEach(function (f, idx) {
+            const t = now + idx * 0.11;
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(f, t);
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.0001, t);
+            g.gain.exponentialRampToValueAtTime(0.095, t + 0.008);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.95);
+            osc.connect(g);
+            g.connect(SoundEngine.starGain);
+            osc.start(t);
+            osc.stop(t + 1.0);
+          });
+        },
+
+        playWaterStep: function () {
+          this.ensureInit();
+          const ctx = this.ctx;
+          if (!ctx || appState.audioSettings.muted) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(540, now);
+          osc.frequency.exponentialRampToValueAtTime(780, now + 0.075);
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.0001, now);
+          g.gain.exponentialRampToValueAtTime(0.055, now + 0.012);
+          g.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+          osc.connect(g);
+          g.connect(this.waterGain);
+          osc.start(now);
+          osc.stop(now + 0.18);
+        }
+      };
+
+      /* Character State */
+      const character = {
+        x: 0,
+        y: 0,
+        targetX: 0,
+        vx: 0,
+        vy: 0,
+        isJumping: false,
+        wetness: 0,
+        facingLeft: false,
+        stepAccum: 0
+      };
+
+      function updateCharacter(dt) {
+        if (isCharacterPaused()) return;
+        const speed = 140;
+        const dx = character.targetX - character.x;
+        if (Math.abs(dx) > 3) {
+          character.facingLeft = dx < 0;
+          const moveStep = Math.sign(dx) * Math.min(Math.abs(dx), speed * dt);
+          character.x += moveStep;
+          if (character.x < getShoreX()) {
+            character.stepAccum += Math.abs(moveStep);
+            if (character.stepAccum >= 22) {
+              character.stepAccum = 0;
+              SoundEngine.playWaterStep();
+            }
+          }
+        }
+        character.y = getGroundY(character.x);
+
+        /* Wetness in water */
+        if (character.x < getShoreX()) {
+          character.wetness = Math.min(1, character.wetness + dt / 10);
+        } else {
+          character.wetness = Math.max(0, character.wetness - dt / 5);
+        }
+      }
+
+      function bootstrap() {
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        loadAppState().then(function () {
+          updateArchiveBadge();
+        });
+
+        canvas.addEventListener('pointerdown', function (e) {
+          SoundEngine.ensureInit();
+          const rect = canvas.getBoundingClientRect();
+          const clickX = e.clientX - rect.left;
+          const clickY = e.clientY - rect.top;
+
+          /* Ground target movement */
+          if (clickY > H * 0.6) {
+            character.targetX = Math.max(24, Math.min(W - 24, clickX));
+            return;
+          }
+          /* Trajectories creation */
+          spawnTrajectories();
+          SoundEngine.playViolinChord();
+        });
+
+        let lastT = performance.now();
+        function loop(t) {
+          const dt = Math.min(0.05, (t - lastT) / 1000);
+          lastT = t;
+          updateCharacter(dt);
+          requestAnimationFrame(loop);
+        }
+        requestAnimationFrame(loop);
+      }
+
+      bootstrap();
+    })();
+  </script>
+</body>
+</html>
